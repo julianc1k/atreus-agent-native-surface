@@ -87,8 +87,9 @@ npm run dev
 - [x] Fictional-data and no-transaction disclosures are visible in the product and documentation.
 - [x] Recordable demo outline is under three minutes.
 - [ ] Julian crowns and uploads the final public YouTube demo.
+- [ ] Verify the final video is under three minutes, publicly visible on YouTube, shows the functioning project, and includes audio narration explaining what was built and how WebMCP is used.
 - [ ] Submitter confirms personal, jurisdiction, age, affiliation, and other eligibility under the official rules; this document makes no such assertion.
 - [ ] Submitter completes the Devpost fields and submits before **September 3, 2026 at 1:00 p.m. PT**.
 - [ ] Submitter performs a final rights, link, repository-publicity, and rules check immediately before submission.
-- [ ] Make no post-deadline changes to the submitted project or Devpost entry.
+- [ ] Do not alter the Devpost entry, submitted repository, or submitted live site until winners are announced; fork separately to continue development.
 - [ ] Keep the application free and publicly accessible through the full judging period.
