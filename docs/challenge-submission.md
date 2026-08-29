@@ -41,7 +41,7 @@ CI runs linting, TypeScript, unit tests, a production build, and Playwright desk
 
 ## Test the project
 
-1. Open the live demo. A current WebMCP-capable client can discover page tools; every browser can complete the same manual workflow.
+1. Open the live demo in the ChatGPT in-app browser, **or** Chrome 149+ with `chrome://flags/#enable-webmcp-testing` enabled and the browser restarted. The complete manual fallback also works in modern browsers, including Safari.
 2. Use the canonical request: **“I need durable flooring for a 1,500-square-foot Dallas restaurant with a short shutdown.”**
 3. Inspect the three initial tools, then build the fit board with Dallas, restaurant, 1,500 square feet, a three-day shutdown, and the visible priorities.
 4. Confirm the fit board appears with assumptions and site-review questions, and that the fourth staging tool is now available.
@@ -53,9 +53,14 @@ For a local run:
 
 ```bash
 npm ci
-npm run dev
 npm run check
 npm run test:e2e
+```
+
+Then start the blocking local development server in a separate terminal:
+
+```bash
+npm run dev
 ```
 
 ## Judging criteria
@@ -81,7 +86,9 @@ npm run test:e2e
 - [x] Git-tracked source, tests, documentation, and original interface screenshots.
 - [x] Fictional-data and no-transaction disclosures are visible in the product and documentation.
 - [x] Recordable demo outline is under three minutes.
-- [ ] Julian crowns, records, and uploads the final public YouTube demo.
+- [ ] Julian crowns and uploads the final public YouTube demo.
 - [ ] Submitter confirms personal, jurisdiction, age, affiliation, and other eligibility under the official rules; this document makes no such assertion.
 - [ ] Submitter completes the Devpost fields and submits before **September 3, 2026 at 1:00 p.m. PT**.
 - [ ] Submitter performs a final rights, link, repository-publicity, and rules check immediately before submission.
+- [ ] Make no post-deadline changes to the submitted project or Devpost entry.
+- [ ] Keep the application free and publicly accessible through the full judging period.
