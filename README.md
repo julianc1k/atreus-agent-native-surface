@@ -44,6 +44,7 @@ Use the manual controls to reproduce the canonical prompt:
 
 - [WebMCP Challenge submission draft](./docs/challenge-submission.md)
 - [Under-three-minute demo script](./docs/demo-script.md) — recording and public upload pending
+- [Adoption path for OctoPoxy and future clients](./docs/adoption-path.md)
 
 ## Verification
 
