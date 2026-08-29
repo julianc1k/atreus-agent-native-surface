@@ -8,8 +8,6 @@ SurfacePilot is a clearly fictional Dallas commercial-flooring website built to 
 
 [Open SurfacePilot Commercial Flooring](https://atreus-agent-native-surface-julianc1ks-projects.vercel.app)
 
-Current Vercel deployment: `dpl_4kjeBKYq8dSptDqa3kJfVeN6Pcio`.
-
 Material Ledger is the crowned interface:
 
 <p>
