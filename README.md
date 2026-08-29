@@ -4,6 +4,19 @@ SurfacePilot is a clearly fictional Dallas commercial-flooring website built to 
 
 > Demo only. All business facts are synthetic. Nothing is quoted, booked, submitted, published, or sent.
 
+## Live demo
+
+[Open SurfacePilot Commercial Flooring](https://atreus-agent-native-surface-julianc1ks-projects.vercel.app)
+
+Material Ledger is the crowned interface:
+
+<p>
+  <img src="./docs/screenshots/material-ledger-desktop.png" width="70%" alt="SurfacePilot Material Ledger desktop interface at 1440 pixels wide" />
+  <img src="./docs/screenshots/material-ledger-mobile.png" width="24%" alt="SurfacePilot Material Ledger mobile interface at 390 pixels wide" />
+</p>
+
+To reset the demo, select **Reset demonstration** in the footer. This clears the fit board, staged draft, and local receipt, then restores the canonical Dallas restaurant inputs. Nothing is deleted from a server because the demo has no backend.
+
 ## What it proves
 
 - Four narrow WebMCP tools expose approved facts, service-area checks, a flooring fit board, and a review draft.
@@ -38,9 +51,11 @@ npm run test:e2e
 
 ## WebMCP support
 
-The adapter progressively registers tools through `document.modelContext` when the browser exposes the current WebMCP draft API. It uses the official [`webmcp-types`](https://www.npmjs.com/package/webmcp-types) package. Safari and other unsupported browsers still receive the full normal interface.
+The adapter progressively registers tools through `document.modelContext` in clients that currently expose the WebMCP draft API. It uses the official [`webmcp-types`](https://www.npmjs.com/package/webmcp-types) package. Support remains experimental and may change; every browser still receives the complete manual workflow when WebMCP is unavailable.
 
 WebMCP is experimental. See the [public specification repository](https://github.com/webmachinelearning/webmcp) and [current implementation status](https://github.com/webmachinelearning/webmcp/blob/main/implementation-status.md).
+
+The narrated demo recording and public upload are pending. The recordable outline is in [`docs/demo-script.md`](./docs/demo-script.md).
 
 ## Trust boundary
 
