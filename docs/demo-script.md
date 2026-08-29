@@ -3,6 +3,12 @@
 **Target runtime:** 2 minutes 30 seconds  
 **Status:** Recording and public upload pending.
 
+## Recording preflight
+
+- Show only owned visuals from SurfacePilot.
+- Crop or keep unshown any unapproved third-party account, browser, or product marks.
+- Use no copyrighted music, footage, imagery, or other material unless its license is confirmed for this submission.
+
 ## 0:00–0:20 — Establish the truth
 
 Open the live site and show the top disclosure.

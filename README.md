@@ -27,7 +27,7 @@ To reset the demo, select **Reset demonstration** in the footer. This clears the
 
 ## Run locally
 
-Requires Node.js 24 or newer.
+Requires Node.js 24.x.
 
 ```bash
 npm ci
@@ -40,6 +40,11 @@ Use the manual controls to reproduce the canonical prompt:
 
 > I need durable flooring for a 1,500-square-foot Dallas restaurant with a short shutdown.
 
+## Documentation
+
+- [WebMCP Challenge submission draft](./docs/challenge-submission.md)
+- [Under-three-minute demo script](./docs/demo-script.md) — recording and public upload pending
+
 ## Verification
 
 ```bash
@@ -51,7 +56,7 @@ npm run test:e2e
 
 ## WebMCP support
 
-The adapter progressively registers tools through `document.modelContext` in clients that currently expose the WebMCP draft API. It uses the official [`webmcp-types`](https://www.npmjs.com/package/webmcp-types) package. Support remains experimental and may change; every browser still receives the complete manual workflow when WebMCP is unavailable.
+The adapter progressively registers tools through `document.modelContext` in clients that currently expose the WebMCP draft API. It uses the official [`webmcp-types`](https://www.npmjs.com/package/webmcp-types) package. Support remains experimental and may change. The complete manual fallback works in modern browsers, including Safari, when WebMCP is unavailable.
 
 WebMCP is experimental. See the [public specification repository](https://github.com/webmachinelearning/webmcp) and [current implementation status](https://github.com/webmachinelearning/webmcp/blob/main/implementation-status.md).
 
