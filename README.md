@@ -40,6 +40,11 @@ Use the manual controls to reproduce the canonical prompt:
 
 > I need durable flooring for a 1,500-square-foot Dallas restaurant with a short shutdown.
 
+## Documentation
+
+- [WebMCP Challenge submission draft](./docs/challenge-submission.md)
+- [Under-three-minute demo script](./docs/demo-script.md) — recording and public upload pending
+
 ## Verification
 
 ```bash
