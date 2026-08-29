@@ -26,11 +26,10 @@ async function installWebMcpMock(page: import('@playwright/test').Page, rejectRe
 }
 
 test.describe('SurfacePilot normal workflow', () => {
-  for (const direction of ['ledger', 'floorplan']) {
-    test(`${direction} direction completes the local review path`, async ({ page }) => {
-      await page.goto(`/?direction=${direction}`)
+    test('Material Ledger completes the local review path', async ({ page }) => {
+      await page.goto('/')
       await expect(page.getByRole('heading', { name: 'Plan the floor. Keep the decision.' })).toBeVisible()
-      await expect(page.getByText('Manual mode — complete')).toBeVisible()
+      await expect(page.getByText('Manual workflow ready')).toBeVisible()
       await page.getByRole('button', { name: 'Build fit board' }).click()
       await expect(page.getByRole('heading', { name: 'Material fit board' })).toBeVisible()
       await expect.poll(() => page.evaluate(() => document.activeElement?.id)).toBe('fit-title')
@@ -45,10 +44,9 @@ test.describe('SurfacePilot normal workflow', () => {
       await expect(page.getByText('Local receipt created')).toBeHidden()
       await expect(page.evaluate(() => localStorage.getItem('surfacepilot.localApprovalReceipt.v1'))).resolves.toBeNull()
     })
-  }
 
   test('reset restores the deterministic initial state', async ({ page }) => {
-    await page.goto('/?direction=ledger')
+    await page.goto('/')
     await page.getByRole('button', { name: 'Build fit board' }).click()
     await page.getByRole('button', { name: 'Stage review draft' }).click()
     await page.getByRole('button', { name: 'Reset demonstration' }).click()
@@ -57,18 +55,16 @@ test.describe('SurfacePilot normal workflow', () => {
     await expect(page.getByLabel('Floor area')).toHaveValue('1500')
   })
 
-  test('both directions have no automatically detectable accessibility violations', async ({ page }) => {
-    for (const direction of ['ledger', 'floorplan']) {
-      await page.goto(`/?direction=${direction}`)
-      await page.getByRole('button', { name: 'Build fit board' }).click()
-      await expect(page.getByRole('heading', { name: 'Material fit board' })).toBeVisible()
-      const results = await new AxeBuilder({ page }).analyze()
-      expect(results.violations).toEqual([])
-    }
+  test('has no automatically detectable accessibility violations', async ({ page }) => {
+    await page.goto('/')
+    await page.getByRole('button', { name: 'Build fit board' }).click()
+    await expect(page.getByRole('heading', { name: 'Material fit board' })).toBeVisible()
+    const results = await new AxeBuilder({ page }).analyze()
+    expect(results.violations).toEqual([])
   })
 
   test('renders script-like project text only as inert text', async ({ page }) => {
-    await page.goto('/?direction=ledger')
+    await page.goto('/')
     const scriptsBefore = await page.locator('script').count()
     await page.getByLabel('City').fill('<script>alert(1)</script>')
     await page.getByRole('button', { name: 'Build fit board' }).click()
@@ -87,7 +83,7 @@ test.describe('SurfacePilot normal workflow', () => {
         },
       })
     })
-    await page.goto('/?direction=ledger')
+    await page.goto('/')
     await page.getByRole('button', { name: 'Build fit board' }).click()
     await page.getByRole('button', { name: 'Stage review draft' }).click()
     await page.getByRole('button', { name: 'Approve local demo receipt' }).click()
@@ -104,7 +100,7 @@ test.describe('WebMCP boundary', () => {
   })
 
   test('registers only the approved tools and dynamically stages the fourth', async ({ page }) => {
-    await page.goto('/?direction=floorplan')
+    await page.goto('/')
     await expect(page.getByText('Page tools ready')).toBeVisible()
 
     const initialNames = await page.evaluate(async () => {
@@ -135,7 +131,7 @@ test.describe('WebMCP boundary', () => {
   })
 
   test('rejects unknown fields and honors an already-aborted call', async ({ page }) => {
-    await page.goto('/?direction=ledger')
+    await page.goto('/')
     await expect(page.getByText('Page tools ready')).toBeVisible()
     const messages = await page.evaluate(async () => {
       const registry = (window as unknown as { __surfacePilotTools: Map<string, { execute: (input: Record<string, unknown>, options?: { signal: AbortSignal }) => unknown }> }).__surfacePilotTools
@@ -160,7 +156,7 @@ test.describe('WebMCP boundary', () => {
   })
 
   test('executes through a browser client that omits callback options', async ({ page }) => {
-    await page.goto('/?direction=ledger')
+    await page.goto('/')
     await expect(page.getByText('Page tools ready')).toBeVisible()
     const results = await page.evaluate(async () => {
       const registry = (window as unknown as { __surfacePilotTools: Map<string, { execute: (input: Record<string, unknown>, options?: { signal: AbortSignal }) => unknown }> }).__surfacePilotTools
@@ -173,7 +169,7 @@ test.describe('WebMCP boundary', () => {
   })
 
   test('editing a project fact revokes the board, brief, receipt, and staged tool', async ({ page }) => {
-    await page.goto('/?direction=ledger')
+    await page.goto('/')
     await expect(page.getByText('Page tools ready')).toBeVisible()
     await page.getByRole('button', { name: 'Build fit board' }).click()
     await page.getByRole('button', { name: 'Stage review draft' }).click()
@@ -200,7 +196,7 @@ test.describe('WebMCP boundary', () => {
   })
 
   test('rejects a stale fit-board revision and reset unregisters the staged tool', async ({ page }) => {
-    await page.goto('/?direction=ledger')
+    await page.goto('/')
     await expect(page.getByText('Page tools ready')).toBeVisible()
     await page.getByRole('button', { name: 'Build fit board' }).click()
     await expect.poll(async () => page.evaluate(async () => (await document.modelContext?.getTools())?.map((tool) => tool.name))).toContain('stage_project_brief_for_review')
@@ -220,7 +216,7 @@ test.describe('WebMCP boundary', () => {
 
   test('fails closed when the second tool registration is rejected', async ({ page }) => {
     await installWebMcpMock(page, 2)
-    await page.goto('/?direction=floorplan')
+    await page.goto('/')
     await expect(page.getByText('Tools unavailable — manual mode ready')).toBeVisible()
     await expect.poll(async () => page.evaluate(async () => (await document.modelContext?.getTools())?.map((tool) => tool.name))).toEqual([])
     await expect(page.getByRole('button', { name: 'Build fit board' })).toBeEnabled()

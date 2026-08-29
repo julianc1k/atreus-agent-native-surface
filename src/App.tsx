@@ -6,7 +6,6 @@ import { ProjectInputSchema } from './domain/validation'
 import type { ApprovalReceipt, FitBoard, Priority, ProjectBrief, ProjectInput, ServiceAreaResult } from './domain/types'
 import { registerWebMcpTools, WEBMCP_TOOL_NAMES } from './webmcp/registerTools'
 
-type Direction = 'ledger' | 'floorplan'
 type WebMcpStatus = 'checking' | 'registered' | 'unsupported' | 'blocked'
 
 const initialProject: ProjectInput = {
@@ -15,10 +14,6 @@ const initialProject: ProjectInput = {
   squareFeet: 1500,
   shutdownDays: 3,
   priorities: ['short-shutdown', 'heat-resistance', 'slip-resistance'],
-}
-
-function directionFromUrl(): Direction {
-  return new URLSearchParams(window.location.search).get('direction') === 'floorplan' ? 'floorplan' : 'ledger'
 }
 
 function formatDate(value: string): string {
@@ -38,7 +33,7 @@ function StatusMark({ status }: { status: WebMcpStatus }) {
   const label = {
     checking: 'Checking browser',
     registered: 'Page tools ready',
-    unsupported: 'Manual mode — complete',
+    unsupported: 'Manual workflow ready',
     blocked: 'Tools unavailable — manual mode ready',
   }[status]
   return <span className={`status-mark status-${status}`}><span aria-hidden="true" />{label}</span>
@@ -55,7 +50,6 @@ function MaterialGlyph({ kind }: { kind: 'heat' | 'time' | 'water' | 'review' })
 }
 
 export default function App() {
-  const direction = directionFromUrl()
   const [project, setProject] = useState<ProjectInput>(initialProject)
   const [serviceArea, setServiceArea] = useState<ServiceAreaResult | null>(null)
   const [board, setBoard] = useState<FitBoard | null>(null)
@@ -208,7 +202,7 @@ export default function App() {
   }
 
   return (
-    <div className={`site direction-${direction}`}>
+    <div className="site">
       <a className="skip-link" href="#workspace">Skip to project workspace</a>
       <header className="top-shell">
         <div className="demo-ribbon" role="note">
@@ -217,7 +211,7 @@ export default function App() {
           <span>No real quote or submission</span>
         </div>
         <div className="site-header">
-          <a className="brand" href={`?direction=${direction}`} aria-label="SurfacePilot home">
+          <a className="brand" href="/" aria-label="SurfacePilot home">
             <span className="brand-mark" aria-hidden="true"><i /><i /><i /></span>
             <span>SurfacePilot<small>Commercial flooring</small></span>
           </a>
@@ -240,21 +234,12 @@ export default function App() {
           </div>
 
           <div className="hero-object" aria-label="Floor system comparison preview">
-            {direction === 'ledger' ? (
-              <div className="material-stack">
-                <div className="sample sample-urethane"><strong>Urethane cement</strong><small>Heat + wet zones</small></div>
-                <div className="sample sample-quartz"><strong>Epoxy quartz</strong><small>Front of house</small></div>
-                <div className="sample sample-poly"><strong>Fast-cure system</strong><small>Short shutdown</small></div>
-                <div className="material-note">A recommendation is a starting point—not a specification.</div>
-              </div>
-            ) : (
-              <div className="floorplan-hero">
-                <div className="zone zone-dining"><span>Dining</span><b>Epoxy quartz</b></div>
-                <div className="zone zone-kitchen"><span>Kitchen</span><b>Urethane cement</b></div>
-                <div className="zone zone-entry"><span>Entry</span><b>Fast-cure option</b></div>
-                <div className="plan-key"><span><i className="key-1" />Public</span><span><i className="key-2" />Wet + heat</span><span><i className="key-3" />Transition</span></div>
-              </div>
-            )}
+            <div className="material-stack">
+              <div className="sample sample-urethane"><strong>Urethane cement</strong><small>Heat + wet zones</small></div>
+              <div className="sample sample-quartz"><strong>Epoxy quartz</strong><small>Front of house</small></div>
+              <div className="sample sample-poly"><strong>Fast-cure system</strong><small>Short shutdown</small></div>
+              <div className="material-note">A recommendation is a starting point—not a specification.</div>
+            </div>
           </div>
         </section>
 
@@ -371,11 +356,6 @@ export default function App() {
 
       <footer>
         <div><strong>SurfacePilot</strong><span>Fictional commercial flooring demo</span></div>
-        <div className="direction-switch" aria-label="Visual direction">
-          <span>Compare direction:</span>
-          <a aria-current={direction === 'ledger' ? 'page' : undefined} href="?direction=ledger">Material Ledger</a>
-          <a aria-current={direction === 'floorplan' ? 'page' : undefined} href="?direction=floorplan">Live Floorplan</a>
-        </div>
         <button className="reset-button" onClick={resetDemo}>Reset demonstration</button>
       </footer>
     </div>

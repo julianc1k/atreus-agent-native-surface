@@ -21,10 +21,7 @@ npm ci
 npm run dev
 ```
 
-Open either visual direction:
-
-- Material Ledger: `http://localhost:5173/?direction=ledger`
-- Live Floorplan: `http://localhost:5173/?direction=floorplan`
+Open Material Ledger at `http://localhost:5173/`.
 
 Use the manual controls to reproduce the canonical prompt:
 
@@ -37,7 +34,7 @@ npm run check
 npm run test:e2e
 ```
 
-`npm run check` runs linting, TypeScript, unit tests, and the production build. Playwright covers both visual directions and the human-only review boundary.
+`npm run check` runs linting, TypeScript, unit tests, and the production build. Playwright covers the complete human-only review boundary.
 
 ## WebMCP support
 
