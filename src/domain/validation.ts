@@ -19,6 +19,7 @@ export const ProjectInputSchema = z
     priorities: z
       .array(z.enum(['short-shutdown', 'heat-resistance', 'slip-resistance', 'easy-maintenance', 'appearance']))
       .max(5)
+      .refine((priorities) => new Set(priorities).size === priorities.length, 'Priorities must be unique.')
       .default([]),
   })
   .strict()

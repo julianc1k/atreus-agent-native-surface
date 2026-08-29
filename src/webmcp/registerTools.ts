@@ -14,13 +14,12 @@ export interface ToolBridge {
   getBoard: () => FitBoard | null
   nextBoardRevision: () => number
   nextBriefRevision: () => number
-  showServiceArea: (result: ReturnType<typeof checkServiceArea>) => void
   showBoard: (board: FitBoard) => void
   showBrief: (brief: ProjectBrief) => void
 }
 
-function cancelled(signal: AbortSignal): void {
-  if (signal.aborted) throw new DOMException('Tool execution was cancelled.', 'AbortError')
+function cancelled(signal?: AbortSignal): void {
+  if (signal?.aborted) throw new DOMException('Tool execution was cancelled.', 'AbortError')
 }
 
 export async function registerWebMcpTools(bridge: ToolBridge, signal: AbortSignal): Promise<'registered' | 'unsupported'> {
@@ -34,8 +33,8 @@ export async function registerWebMcpTools(bridge: ToolBridge, signal: AbortSigna
       description: 'Returns the synthetic SurfacePilot capabilities, limitations, and provenance. It does not return prices, availability, or real business data.',
       inputSchema: jsonSchemas.empty,
       annotations: { readOnlyHint: true },
-      execute(input, options) {
-        parseOrThrow(EmptyInputSchema, input, options.signal)
+      execute(input, options?: WebMCP.ToolExecuteCallbackOptions) {
+        parseOrThrow(EmptyInputSchema, input, options?.signal)
         return BUSINESS_FACTS
       },
     },
@@ -44,12 +43,10 @@ export async function registerWebMcpTools(bridge: ToolBridge, signal: AbortSigna
       title: 'Check demonstration service area',
       description: 'Classifies one city as eligible, ineligible, or unknown using the synthetic business pack. Provide a city only, never an address.',
       inputSchema: jsonSchemas.serviceArea,
-      annotations: { readOnlyHint: true },
-      execute(input, options) {
-        const parsed = parseOrThrow(ServiceAreaInputSchema, input, options.signal)
-        const result = checkServiceArea(parsed)
-        bridge.showServiceArea(result)
-        return result
+      annotations: { readOnlyHint: true, untrustedContentHint: true },
+      execute(input, options?: WebMCP.ToolExecuteCallbackOptions) {
+        const parsed = parseOrThrow(ServiceAreaInputSchema, input, options?.signal)
+        return checkServiceArea(parsed)
       },
     },
     {
@@ -57,10 +54,11 @@ export async function registerWebMcpTools(bridge: ToolBridge, signal: AbortSigna
       title: 'Build visible flooring fit board',
       description: 'Deterministically compares flooring systems for a bounded commercial project and updates the visible page. It does not quote, schedule, or promise availability.',
       inputSchema: jsonSchemas.project,
-      execute(input, options) {
-        const project = parseOrThrow(ProjectInputSchema, input, options.signal)
+      annotations: { untrustedContentHint: true },
+      execute(input, options?: WebMCP.ToolExecuteCallbackOptions) {
+        const project = parseOrThrow(ProjectInputSchema, input, options?.signal)
         const board = buildFitBoard(project, bridge.nextBoardRevision())
-        cancelled(options.signal)
+        cancelled(options?.signal)
         bridge.showBoard(board)
         return board
       },
@@ -74,20 +72,35 @@ export async function registerWebMcpTools(bridge: ToolBridge, signal: AbortSigna
       title: 'Stage project brief for human review',
       description: 'Stages a non-binding draft for the exact visible fit-board revision. It cannot approve, submit, book, message, charge, or publish.',
       inputSchema: jsonSchemas.stageBrief,
-      execute(input, options) {
-        const parsed = parseOrThrow(StageBriefInputSchema, input, options.signal)
+      annotations: { untrustedContentHint: true },
+      execute(input, options?: WebMCP.ToolExecuteCallbackOptions) {
+        const parsed = parseOrThrow(StageBriefInputSchema, input, options?.signal)
         const currentBoard = bridge.getBoard()
         if (!currentBoard || currentBoard.revision !== parsed.fitBoardRevision) {
           throw new DOMException('The requested fit-board revision is stale or unavailable.', 'InvalidStateError')
         }
         const brief = stageProjectBrief(currentBoard, bridge.nextBriefRevision())
-        cancelled(options.signal)
+        cancelled(options?.signal)
         bridge.showBrief(brief)
         return brief
       },
     })
   }
 
-  await Promise.all(tools.map((tool) => context.registerTool(tool, { signal })))
-  return 'registered'
+  const registrationController = new AbortController()
+  const unregisterAll = () => registrationController.abort()
+  if (signal.aborted) {
+    unregisterAll()
+    throw new DOMException('Tool registration was cancelled.', 'AbortError')
+  }
+  signal.addEventListener('abort', unregisterAll, { once: true })
+
+  try {
+    await Promise.all(tools.map((tool) => context.registerTool(tool, { signal: registrationController.signal })))
+    return 'registered'
+  } catch (error) {
+    unregisterAll()
+    signal.removeEventListener('abort', unregisterAll)
+    throw error
+  }
 }

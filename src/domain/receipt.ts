@@ -29,8 +29,11 @@ export async function createApprovalReceipt(brief: ProjectBrief): Promise<Approv
     approvedAt: new Date().toISOString(),
     statement: 'Local demo approval only — nothing was sent, booked, submitted, charged, or published.',
   }
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(receipt))
   return receipt
+}
+
+export function persistApprovalReceipt(receipt: ApprovalReceipt): void {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(receipt))
 }
 
 export function loadApprovalReceipt(): ApprovalReceipt | null {

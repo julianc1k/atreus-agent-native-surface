@@ -1,6 +1,6 @@
 import type { FlooringSystem } from './types'
 
-export const VERIFIED_AT = '2026-08-29'
+export const APPROVED_AT = '2026-08-29'
 
 export const BUSINESS_FACTS = {
   businessName: 'SurfacePilot Commercial Flooring',
@@ -19,7 +19,7 @@ export const BUSINESS_FACTS = {
   ],
   provenance: {
     source: 'Synthetic SurfacePilot business pack v1',
-    verifiedAt: VERIFIED_AT,
+    approvedAt: APPROVED_AT,
     owner: 'ATREUS WebMCP Lab',
   },
 } as const

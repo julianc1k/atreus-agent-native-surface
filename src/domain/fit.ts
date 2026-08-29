@@ -1,4 +1,4 @@
-import { BUSINESS_FACTS, ELIGIBLE_CITIES, FLOORING_SYSTEMS, INELIGIBLE_CITIES, VERIFIED_AT } from './business'
+import { APPROVED_AT, BUSINESS_FACTS, ELIGIBLE_CITIES, FLOORING_SYSTEMS, INELIGIBLE_CITIES } from './business'
 import { ProjectInputSchema, ServiceAreaInputSchema } from './validation'
 import type { FitBoard, ProjectBrief, ProjectInput, RankedSystem, ServiceAreaResult } from './types'
 
@@ -14,7 +14,7 @@ export function checkServiceArea(input: { city: string }): ServiceAreaResult {
       city: city.trim(),
       status: 'eligible',
       reason: `${city.trim()} is inside the synthetic SurfacePilot demonstration area. This is not a promise of availability.`,
-      verifiedAt: VERIFIED_AT,
+      approvedAt: APPROVED_AT,
     }
   }
   if ((INELIGIBLE_CITIES as readonly string[]).includes(normalized)) {
@@ -22,14 +22,14 @@ export function checkServiceArea(input: { city: string }): ServiceAreaResult {
       city: city.trim(),
       status: 'ineligible',
       reason: `${city.trim()} is outside the synthetic demonstration area.`,
-      verifiedAt: VERIFIED_AT,
+      approvedAt: APPROVED_AT,
     }
   }
   return {
     city: city.trim(),
     status: 'unknown',
     reason: `${city.trim()} is not classified in the synthetic business pack. A human would need to verify service availability.`,
-    verifiedAt: VERIFIED_AT,
+    approvedAt: APPROVED_AT,
   }
 }
 

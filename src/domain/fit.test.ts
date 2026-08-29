@@ -49,6 +49,7 @@ describe('deterministic fit board', () => {
     expect(ProjectInputSchema.safeParse({ ...project, priorities: [...project.priorities], squareFeet: 99 }).success).toBe(false)
     expect(ProjectInputSchema.safeParse({ ...project, priorities: [...project.priorities], squareFeet: 1500, address: 'do not collect' }).success).toBe(false)
     expect(ProjectInputSchema.safeParse({ ...project, priorities: ['made-up'] }).success).toBe(false)
+    expect(ProjectInputSchema.safeParse({ ...project, priorities: ['short-shutdown', 'short-shutdown'] }).success).toBe(false)
     expect(ProjectInputSchema.safeParse({ ...project, priorities: [...project.priorities], shutdownDays: 31 }).success).toBe(false)
   })
 })

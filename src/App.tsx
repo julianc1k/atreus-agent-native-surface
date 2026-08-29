@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { BUSINESS_FACTS } from './domain/business'
 import { buildFitBoard, checkServiceArea, stageProjectBrief } from './domain/fit'
-import { clearApprovalReceipt, createApprovalReceipt, loadApprovalReceipt, receiptMatchesBrief } from './domain/receipt'
+import { clearApprovalReceipt, createApprovalReceipt, loadApprovalReceipt, persistApprovalReceipt, receiptMatchesBrief } from './domain/receipt'
 import { ProjectInputSchema } from './domain/validation'
 import type { ApprovalReceipt, FitBoard, Priority, ProjectBrief, ProjectInput, ServiceAreaResult } from './domain/types'
 import { registerWebMcpTools, WEBMCP_TOOL_NAMES } from './webmcp/registerTools'
@@ -23,6 +23,15 @@ function directionFromUrl(): Direction {
 
 function formatDate(value: string): string {
   return new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value))
+}
+
+function reveal(selector: string, moveFocus: boolean): void {
+  requestAnimationFrame(() => {
+    const element = document.querySelector<HTMLElement>(selector)
+    if (!element) return
+    element.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' })
+    if (moveFocus) element.focus({ preventScroll: true })
+  })
 }
 
 function StatusMark({ status }: { status: WebMcpStatus }) {
@@ -56,29 +65,42 @@ export default function App() {
   const [webMcpStatus, setWebMcpStatus] = useState<WebMcpStatus>('checking')
   const [error, setError] = useState<string | null>(null)
   const boardRef = useRef<FitBoard | null>(null)
+  const briefRef = useRef<ProjectBrief | null>(null)
   const boardRevision = useRef(0)
   const briefRevision = useRef(0)
+  const approvalEpoch = useRef(0)
 
   const invalidateReceipt = useCallback(() => {
+    approvalEpoch.current += 1
     clearApprovalReceipt()
     setReceipt(null)
     setReceiptValid(false)
   }, [])
 
-  const showBoard = useCallback((next: FitBoard) => {
+  const clearPreparedWork = useCallback(() => {
+    boardRef.current = null
+    briefRef.current = null
+    setBoard(null)
+    setBrief(null)
+    invalidateReceipt()
+  }, [invalidateReceipt])
+
+  const showBoard = useCallback((next: FitBoard, source: 'agent' | 'manual' = 'agent') => {
     boardRef.current = next
+    briefRef.current = null
     setBoard(next)
     setBrief(null)
     invalidateReceipt()
     setError(null)
-    requestAnimationFrame(() => document.querySelector('#fit-board')?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+    reveal('#fit-title', source === 'manual')
   }, [invalidateReceipt])
 
-  const showBrief = useCallback((next: ProjectBrief) => {
+  const showBrief = useCallback((next: ProjectBrief, source: 'agent' | 'manual' = 'agent') => {
+    briefRef.current = next
     setBrief(next)
     invalidateReceipt()
     setError(null)
-    requestAnimationFrame(() => document.querySelector('#review-draft')?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+    reveal('#review-title', source === 'manual')
   }, [invalidateReceipt])
 
   useEffect(() => {
@@ -92,7 +114,6 @@ export default function App() {
         getBoard: () => boardRef.current,
         nextBoardRevision: () => ++boardRevision.current,
         nextBriefRevision: () => ++briefRevision.current,
-        showServiceArea: (result) => { setServiceArea(result); setError(null) },
         showBoard,
         showBrief,
       },
@@ -117,6 +138,8 @@ export default function App() {
 
   function updateProject<K extends keyof ProjectInput>(key: K, value: ProjectInput[K]) {
     setProject((current) => ({ ...current, [key]: value }))
+    setServiceArea(null)
+    clearPreparedWork()
     setError(null)
   }
 
@@ -127,6 +150,7 @@ export default function App() {
   }
 
   function runServiceAreaCheck() {
+    clearPreparedWork()
     try {
       const result = checkServiceArea({ city: project.city })
       setServiceArea(result)
@@ -144,23 +168,29 @@ export default function App() {
     }
     const next = buildFitBoard(parsed.data, ++boardRevision.current)
     setServiceArea(next.serviceArea)
-    showBoard(next)
+    showBoard(next, 'manual')
   }
 
   function runStageBrief() {
     if (!board) return
-    showBrief(stageProjectBrief(board, ++briefRevision.current))
+    showBrief(stageProjectBrief(board, ++briefRevision.current), 'manual')
   }
 
   function editBrief(field: 'summary' | 'recommendation', value: string) {
     if (!brief) return
-    setBrief({ ...brief, [field]: value.slice(0, 500), revision: ++briefRevision.current })
+    const next = { ...brief, [field]: value.slice(0, 500), revision: ++briefRevision.current }
+    briefRef.current = next
+    setBrief(next)
     invalidateReceipt()
   }
 
   async function approveLocalReceipt() {
     if (!brief) return
-    const nextReceipt = await createApprovalReceipt(brief)
+    const approvedBrief = brief
+    const epoch = approvalEpoch.current
+    const nextReceipt = await createApprovalReceipt(approvedBrief)
+    if (epoch !== approvalEpoch.current || briefRef.current !== approvedBrief) return
+    persistApprovalReceipt(nextReceipt)
     setReceipt(nextReceipt)
     setReceiptValid(true)
   }
@@ -171,6 +201,7 @@ export default function App() {
     setBoard(null)
     boardRef.current = null
     setBrief(null)
+    briefRef.current = null
     setError(null)
     invalidateReceipt()
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -211,9 +242,9 @@ export default function App() {
           <div className="hero-object" aria-label="Floor system comparison preview">
             {direction === 'ledger' ? (
               <div className="material-stack">
-                <div className="sample sample-urethane"><span>01</span><strong>Urethane cement</strong><small>Heat + wet zones</small></div>
-                <div className="sample sample-quartz"><span>02</span><strong>Epoxy quartz</strong><small>Front of house</small></div>
-                <div className="sample sample-poly"><span>03</span><strong>Fast-cure system</strong><small>Short shutdown</small></div>
+                <div className="sample sample-urethane"><strong>Urethane cement</strong><small>Heat + wet zones</small></div>
+                <div className="sample sample-quartz"><strong>Epoxy quartz</strong><small>Front of house</small></div>
+                <div className="sample sample-poly"><strong>Fast-cure system</strong><small>Short shutdown</small></div>
                 <div className="material-note">A recommendation is a starting point—not a specification.</div>
               </div>
             ) : (
@@ -291,9 +322,9 @@ export default function App() {
         </section>
 
         {board && (
-          <section id="fit-board" className="fit-board" aria-labelledby="fit-title">
+          <section id="fit-board" className="fit-board" aria-labelledby="fit-title" aria-live="polite">
             <header>
-              <div><p>Visible page update · revision {board.revision}</p><h2 id="fit-title">Material fit board</h2></div>
+              <div><p>Visible page update · revision {board.revision}</p><h2 id="fit-title" tabIndex={-1}>Material fit board</h2></div>
               <span className={`eligibility eligibility-${board.serviceArea.status}`}>{board.serviceArea.city}: {board.serviceArea.status}</span>
             </header>
             <div className="recommendation-list">
@@ -314,9 +345,9 @@ export default function App() {
         )}
 
         {brief && (
-          <section id="review-draft" className="review-draft" aria-labelledby="review-title">
+          <section id="review-draft" className="review-draft" aria-labelledby="review-title" aria-live="polite">
             <div className="review-main">
-              <header><p>Human review surface · draft {brief.revision}</p><h2 id="review-title">Prepared, not submitted.</h2></header>
+              <header><p>Human review surface · draft {brief.revision}</p><h2 id="review-title" tabIndex={-1}>Prepared, not submitted.</h2></header>
               <label>Project summary<textarea maxLength={500} value={brief.summary} onChange={(event) => editBrief('summary', event.target.value)} /></label>
               <label>Recommendation<textarea maxLength={500} value={brief.recommendation} onChange={(event) => editBrief('recommendation', event.target.value)} /></label>
               <div className="draft-columns"><div><h3>Tradeoffs</h3><ul>{brief.tradeoffs.map((item) => <li key={item}>{item}</li>)}</ul></div><div><h3>Site questions</h3><ul>{brief.questionsForSiteReview.map((item) => <li key={item}>{item}</li>)}</ul></div></div>
@@ -333,7 +364,7 @@ export default function App() {
         )}
 
         <section className="truth-section" aria-labelledby="truth-title">
-          <div><p>Synthetic business pack · verified {BUSINESS_FACTS.provenance.verifiedAt}</p><h2 id="truth-title">A useful answer should show its limits.</h2></div>
+          <div><p>Approved demo data · approved {BUSINESS_FACTS.provenance.approvedAt}</p><h2 id="truth-title">A useful answer should show its limits.</h2></div>
           <div className="truth-columns"><div><h3>What this demo can do</h3><ul>{BUSINESS_FACTS.capabilities.map((item) => <li key={item}>{item}</li>)}</ul></div><div><h3>What it cannot do</h3><ul>{BUSINESS_FACTS.limitations.map((item) => <li key={item}>{item}</li>)}</ul></div></div>
         </section>
       </main>

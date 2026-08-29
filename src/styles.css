@@ -58,8 +58,7 @@ main { display: block; }
 .hero-boundary { margin: 1.2rem 0 0; font-size: .75rem; color: var(--muted); }
 .hero-object { min-width: 0; }
 .material-stack { position: relative; min-height: 470px; padding: 2.5rem 1rem 1rem 3rem; }
-.sample { position: relative; width: 88%; min-height: 116px; display: grid; grid-template-columns: 50px 1fr; align-items: center; padding: 1.2rem 2rem; border: 1px solid rgba(29, 31, 28, .28); box-shadow: 0 20px 30px rgba(46, 40, 29, .1); transform-origin: center; }
-.sample span { grid-row: span 2; font-family: Georgia, serif; font-size: 1.8rem; }
+.sample { position: relative; width: 88%; min-height: 116px; display: grid; align-content: center; padding: 1.2rem 2rem; border: 1px solid rgba(29, 31, 28, .28); box-shadow: 0 20px 30px rgba(46, 40, 29, .1); transform-origin: center; }
 .sample strong { font-family: Georgia, serif; font-size: 1.55rem; font-weight: 400; }
 .sample small { color: var(--ink); text-transform: uppercase; letter-spacing: .1em; }
 .sample-urethane { z-index: 3; background: #aeb098; transform: rotate(-3deg); }
@@ -261,8 +260,7 @@ footer span { color: #aeb0ab; font-size: .7rem; }
   .demo-ribbon { justify-content: space-between; gap: .7rem; }
   .demo-ribbon span:last-child { display: none; }
   .site-header { min-height: 76px; }
-  .status-mark { font-size: 0; }
-  .status-mark > span { display: block; }
+  .status-mark { max-width: 135px; font-size: .7rem; line-height: 1.25; }
   .hero, .direction-floorplan .hero { min-height: auto; grid-template-columns: 1fr; gap: 3rem; padding-top: 4rem; }
   .direction-floorplan .hero-object { order: 0; }
   .hero-object { max-width: 620px; }
@@ -279,9 +277,10 @@ footer span { color: #aeb0ab; font-size: .7rem; }
 }
 
 @media (max-width: 520px) {
-  .demo-ribbon { min-height: 38px; padding-inline: 1rem; font-size: .6rem; }
+  .demo-ribbon { min-height: 38px; padding-inline: 1rem; font-size: .75rem; }
   .site-header { padding: 0 1rem; }
   .brand { font-size: 1.08rem; }
+  .brand small { font-size: .75rem; }
   .brand-mark { width: 27px; }
   .hero, .direction-floorplan .hero { padding: 3.4rem 1.1rem 3rem; }
   .hero-context { margin-bottom: 1rem; }
@@ -289,10 +288,9 @@ footer span { color: #aeb0ab; font-size: .7rem; }
   .hero-lede { margin: 1.6rem 0; font-size: 1rem; }
   .primary-link { min-width: 0; width: 100%; }
   .material-stack { min-height: 360px; padding: 1rem 0 0 .5rem; }
-  .sample { width: 94%; min-height: 92px; grid-template-columns: 36px 1fr; padding: .9rem 1rem; }
+  .sample { width: 94%; min-height: 92px; padding: .9rem 1rem; }
   .sample strong { font-size: 1.16rem; }
-  .sample span { font-size: 1.3rem; }
-  .sample small { font-size: .65rem; }
+  .sample small { font-size: .75rem; }
   .material-note { width: 160px; font-size: .65rem; }
   .floorplan-hero { min-height: 355px; padding: 2rem 1rem 1rem; transform: none; }
   .zone { padding: .8rem; }
@@ -305,8 +303,10 @@ footer span { color: #aeb0ab; font-size: .7rem; }
   .workspace-heading h2, .fit-board h2, .review-draft h2, .truth-section h2 { font-size: 2.6rem; }
   .progress small { display: none; }
   .project-form, .tool-manifest { padding: 1.3rem; }
-  .tool-manifest code { font-size: .64rem; }
-  .tool-manifest small { font-size: .6rem; }
+  .tool-manifest code { font-size: .75rem; }
+  .tool-manifest small { font-size: .75rem; }
+  .hero-context, .workspace-heading p, .fit-board header p, .review-main header p, .truth-section > div > p,
+  .project-form label, .no-tools strong, .no-tools span, .system-tags span, .fit-label, footer span { font-size: .75rem; }
   .project-form fieldset:first-child { grid-template-columns: 1fr; }
   .form-actions { align-items: stretch; flex-direction: column-reverse; }
   .form-actions button { width: 100%; }

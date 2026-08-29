@@ -21,7 +21,7 @@ export interface ServiceAreaResult {
   city: string
   status: ServiceAreaStatus
   reason: string
-  verifiedAt: string
+  approvedAt: string
 }
 
 export interface FlooringSystem {
