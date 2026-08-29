@@ -15,9 +15,9 @@ Work starts only after Julian crowns the lab and final demo video. That is a seq
 - Constitution owns hard truth and narrow authority boundaries.
 - Page/shared functions validate inputs, manage state, and orchestrate visible UI. Deterministic pure functions apply only to an actually approved deterministic business rule.
 - Server state and exact receipts own whether anything was sent, booked, paid, published, messaged, or completed.
-- WebMCP tools may research, compare, prepare, and stage visible work. They may not perform or claim a consequential action.
+- WebMCP is stage-only. Its tools may research, compare, prepare, and stage visible work; they never send, book, pay, publish, message, quote, commit, or perform or claim completion.
 - Current OctoPoxy truth is receipt-backed saved leads with strict no-send behavior and manual human relay outside WebMCP. No consequential route is assumed.
-- A real action requires separate route discovery, owner approval, and end-to-end proof before it can be considered. Until then, the pilot is stage-only.
+- If a server action route is later owner-approved and proved end to end, only the human-facing confirmation UI may invoke it. It is never exposed through WebMCP.
 - Correct wrong facts at their owning source, then regenerate the tenant projection. Never patch truth inside the adapter.
 
 ## Reuse from SurfacePilot
@@ -43,7 +43,7 @@ Work starts only after Julian crowns the lab and final demo video. That is a seq
 4. Extend the adapter with narrow tools for approved facts and visible staged preparation; expose a service-area tool only when that rule is sourced and approved.
 5. Keep Core responsible for interpretation and judgment. Shared page functions only validate, manage state, and update visible UI.
 6. Bind staged work to its revision and content hash; any source edit invalidates it.
-7. Discover the exact consequential action route and prove identity, authorization, validation, idempotency, tenant isolation, and the relevant server receipt. Without owner approval and this proof, expose no action tool; remain stage-only with manual relay outside WebMCP.
+7. If a human-facing action is later proposed, discover its exact server route and prove identity, authorization, validation, idempotency, tenant isolation, and the relevant receipt. Only the human confirmation UI may invoke an approved, proved route; WebMCP remains stage-only and manual relay remains outside it.
 8. Prove the normal OctoPoxy journey first, then the same journey through a current WebMCP-capable client.
 9. Verify strict no-send behavior, tenant isolation, source provenance, desktop/mobile UI preservation, revision invalidation, and manual fallback.
 10. Freeze one product candidate. Release requires Julian's product crown or explicit waiver; changed business facts, representation, or a consequential route require separate OctoPoxy owner approval.
@@ -57,9 +57,9 @@ Work starts only after Julian crowns the lab and final demo video. That is a seq
 - [ ] Keep Core model-led, Constitution authority narrow, and action truth server-owned.
 - [ ] Limit page functions to validation, state, and UI orchestration except for genuinely approved deterministic rules.
 - [ ] Give tools distinct names, strict schemas, bounded outputs, cancellation, and cleanup.
-- [ ] Expose no tool that can send, book, pay, publish, message, or claim completion.
+- [ ] Expose no tool that can send, book, pay, publish, message, quote, commit, or perform or claim completion.
 - [ ] Share state/UI orchestration between manual controls and tools; bind staged work to exact revisions.
-- [ ] Discover and prove any real action route separately; otherwise remain stage-only with human relay outside WebMCP.
+- [ ] Keep WebMCP stage-only. Discover and prove any later server action route for human-facing confirmation only; never expose that route as a tool.
 - [ ] Correct facts at source and regenerate downstream artifacts.
 - [ ] Prove invalid-input handling, no-send, tenant isolation, manual fallback, and the natural user journey.
 - [ ] Treat lab/video sequencing, product taste, business representation, and consequential authority as separate decisions.
@@ -69,8 +69,8 @@ Work starts only after Julian crowns the lab and final demo video. That is a seq
 
 - Stop before pilot implementation if the lab and final video are not crowned; that crown grants sequence only.
 - Omit or return unknown for any fact without approved provenance.
-- Stop if a proposed WebMCP tool crosses into send, booking, payment, publishing, messaging, or completion claims.
-- Without an exact owner-approved and end-to-end-proven action route, remain stage-only and keep human relay outside WebMCP.
+- Stop if a proposed WebMCP tool crosses into sending, booking, payment, publishing, messaging, quoting, committing, or performing or claiming completion. WebMCP remains stage-only regardless of route approval.
+- A later owner-approved and end-to-end-proven server action route may be invoked only by the human-facing confirmation UI, never through WebMCP. Until that route exists, keep manual relay outside WebMCP.
 - Reject any design that requires a Core fork, tenant hardcoding in Core, a second finalizer, a new adapter architecture, multitenancy inside this lab, or replacement of the accepted OctoPoxy UI.
 - Reject page logic that replaces Core's interpretation or judgment unless it implements a specifically approved deterministic rule.
 - Stop and correct the owning Business Brain or policy source if the adapter would need to override truth.
